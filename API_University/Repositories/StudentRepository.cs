@@ -38,10 +38,14 @@ namespace API_University.Repositories
 			return existeCampo;
 		}
 
-		public Task<Student> Get(int id)
+		public async Task<Student> Get(int id)
 		{
-			return _apiUniversityContext.Students.FirstOrDefaultAsync(a => a.Id == id);
-		}
+			var student = await _apiUniversityContext.Students.FirstOrDefaultAsync(a => a.Id == id);
+
+			if (student == null)
+				throw new Exception($"El id '{id}' que pasaste no existe.");
+			else return student;
+    }
 
 		public async Task<IEnumerable<Student>> GetAll()
 		{

@@ -1,4 +1,6 @@
 ﻿using API_University.Data;
+using API_University.DTOs.Professor;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_University.Repositories
@@ -6,18 +8,20 @@ namespace API_University.Repositories
   public class ProfessorRepository : IProfessorRepository
   {
     private readonly ApiUniversityContext _apiUniversityContext;
+		private readonly IMapper _mapper;
 
-    public ProfessorRepository(ApiUniversityContext _context)
+		public ProfessorRepository(ApiUniversityContext _context, IMapper mapper)
+		{
+			_apiUniversityContext = _context;
+			_mapper = mapper;
+		}
+
+		public async Task<Professor> Create(Professor professor)
     {
-        _apiUniversityContext = _context;
-    }
+      var res = _apiUniversityContext.Add(professor);
+      await _apiUniversityContext.SaveChangesAsync();
 
-    public async Task<Professor> Create(Professor professor)
-    {
-        var res = _apiUniversityContext.Add(professor);
-        await _apiUniversityContext.SaveChangesAsync();
-
-        return res.Entity;
+      return res.Entity;
     }
 
 		public int GetLastId()
@@ -32,21 +36,26 @@ namespace API_University.Repositories
 			return 0;
 		}
 
-		public Task<Professor> Get(int id)
+		public async Task<Professor> Get(int id)
     {
-        return _apiUniversityContext.Professors.FirstOrDefaultAsync(a => a.Id == id);
+			var professor = await _apiUniversityContext.Professors.FirstOrDefaultAsync(a => a.Id == id);
+
+      if (professor == null)
+				throw new Exception($"El id '{id}' que pasaste no existe.");
+			else return _mapper.Map<Professor>(professor);
+		}
+
+    public async Task<List<ProfessorDto>> GetAll()
+    {
+      var professor = await _apiUniversityContext.Professors.ToListAsync();
+      return _mapper.Map<List<ProfessorDto>>(professor);
     }
 
-    public async Task<IEnumerable<Professor>> GetAll()
+    public async Task<ProfessorDto> Update(Professor professor)
     {
-        return await _apiUniversityContext.Professors.ToListAsync();
-    }
-
-    public async Task<Professor> Update(Professor professor)
-    {
-        var res = _apiUniversityContext.Professors.Update(professor);
-        await _apiUniversityContext.SaveChangesAsync();
-        return res.Entity;
+      var res = _apiUniversityContext.Professors.Update(professor);
+      await _apiUniversityContext.SaveChangesAsync();
+      return _mapper.Map<ProfessorDto>(res.Entity);
     }
   }
 }
