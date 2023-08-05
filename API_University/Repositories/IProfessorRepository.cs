@@ -1,4 +1,5 @@
 ﻿using API_University.Data;
+using API_University.DTOs.Professor;
 
 namespace API_University.Repositories
 {
@@ -8,10 +9,10 @@ namespace API_University.Repositories
 
 		    int GetLastId();
 
-		    Task<IEnumerable<Professor>> GetAll();
+		    Task<List<ProfessorDto>> GetAll();
 
         Task<Professor> Create(Professor professor);
 
-        Task<Professor> Update(Professor professor);
+        Task<ProfessorDto> Update(Professor professor);
     }
 }

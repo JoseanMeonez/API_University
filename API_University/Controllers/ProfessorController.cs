@@ -1,4 +1,5 @@
 ﻿using API_University.Data;
+using API_University.DTOs.Professor;
 using API_University.Repositories;
 using API_University.Repositories.Verifiers;
 using Microsoft.AspNetCore.Http;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API_University.Controllers
 {
-	[Route("api/[controller]")]
+  [Route("api/[controller]")]
 	[ApiController]
 	public class ProfessorController : ControllerBase
 	{
@@ -38,7 +39,7 @@ namespace API_University.Controllers
 		}
 
 		[HttpPost]
-		public async Task<ActionResult<Professor>> Create([FromBody] Professor data)
+		public async Task<ActionResult<ProfessorDto>> Create([FromBody] ProfessorDto data)
 		{
 			bool nameChecker = _checkerRepository.NameVerifier(data.Name);
 			bool emailChecker = _emailCheckerRepository.EmailVerifier(data.Email);
@@ -54,7 +55,6 @@ namespace API_University.Controllers
 
 				var professor = new Professor()
 				{
-					Id = data.Id,
 					Code = "MAE0" + (lastId + 1),
 					Name = data.Name,
 					CelNumber = data.CelNumber,
@@ -67,7 +67,7 @@ namespace API_University.Controllers
 		}
 
 		[HttpPut]
-		public async Task<ActionResult<Professor>> Edit([FromBody] Professor data)
+		public async Task<ActionResult<Professor>> Edit([FromBody] ProfessorDto data)
 		{
 			if (ModelState.IsValid)
 			{
@@ -79,7 +79,6 @@ namespace API_University.Controllers
 				}
 
 				professor.Name = data.Name;
-				professor.Code = data.Code;
 				professor.CelNumber = data.CelNumber;
 				professor.Email = data.Email;
 				professor.EnrollmentDate = data.EnrollmentDate;
